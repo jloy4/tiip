@@ -1,6 +1,9 @@
 #include "Tiip.h"
 #include <iomanip>
 #include <ctime>
+#include <string.h>
+#include <iostream>
+#include <sstream>
 
 Tiip::Tiip() : currButton(0), buttonEnabled(false), newCall(false), currAmount(0), timeDiff(0), ISO(0) {}
 
@@ -96,12 +99,59 @@ void Tiip::nfcLedAction() {
 	}
 }
 
-void Tiip::saveDataToFile() {
+/*void Tiip::saveDataToFile() {
 	dataFile.open("dataFile.csv");
 	std::time_t t = std::time(0);
 	dataFile << std::put_time(std::localtime(&t), "%c %Z") << "," << currAmount << std::endl;
+}*/
+
+std::string getTime() {
+	auto t = std::time(nullptr);
+	auto tm = *std::localtime(&t);
+
+	std::ostringstream oss;
+	oss << std::put_time(&tm, "%d-%m-%Y %H:%M:%S %Z");
+	auto str = oss.str();
+
+	std::cout << str << std::endl;
+	return str;
 }
 
+void Tiip::saveToDatabase() {
+	CURL *curl;
+	CURLcode res;
+	char data[80];
+	snprintf(data, 80, "{\"time\":\"%s\",\"amount\":%.2f}\0",getTime().c_str(), currAmount);
+
+	curl_global_init(CURL_GLOBAL_ALL);
+	struct curl_slist *list = NULL;
+
+	curl = curl_easy_init();
+	if(curl) {
+		// url to database
+		curl_easy_setopt(curl, CURLOPT_URL, "https://tiips-fr.firebaseio.com/bar.json");
+
+		//request headers
+		list = curl_slist_append(list, "Content-Type: application/x-www-form-urlenconded");
+
+		//curl options
+		curl_easy_setopt(curl, CURLOPT_VERBOSE, true);
+		curl_easy_setopt(curl, CURLOPT_POST, true);
+		curl_easy_setopt(curl, CURLOPT_HEADER, true);
+		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data);
+		curl_easy_setopt(curl, CURLOPT_POSTFIELDSIZE, (long)strlen(data));
+
+		res = curl_easy_perform(curl);
+
+		if (res != CURLE_OK) {
+			fprintf(stderr, "curl_easy_perform() failed: %s\n", curl_easy_strerror(res));
+		}
+		curl_easy_cleanup(curl);
+	}
+	curl_global_cleanup();
+}
+	
 void Tiip::enableProcess() {
 	while (true) {
 		// check if no interaction (no button pressed)
@@ -116,9 +166,9 @@ void Tiip::enableProcess() {
 
 		if (buttonEnabled && nfc.isCardPresent(ISO^=1)) {
 			newCall = true;
-			saveDataToFile();
 			std::thread toggle_leds(&Tiip::successActionLED, this);
 			std::thread toggle_tone(&Tiip::successActionTone, this);
+			std::thread send_data(&Tiip::saveToDatabase, this);
 			toggle_leds.join();
 			toggle_tone.join();
 		}

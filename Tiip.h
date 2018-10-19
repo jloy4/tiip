@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <thread>
 #include <fstream>
+#include <curl/curl.h>
 #include "Button.h"
 #include "NFC.h"
 #include "Tone.h"
@@ -37,7 +38,7 @@ public:
 	void successActionTone();
 	void pollButtons();
 	void nfcLedAction();
-	void saveDataToFile();
+	void saveToDatabase();
 	void enableProcess();
 	void startDevice();
 
