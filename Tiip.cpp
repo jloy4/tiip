@@ -183,6 +183,7 @@ void Tiip::enableProcess() {
 			std::thread send_data(&Tiip::saveToDatabase, this);
 			toggle_leds.join();
 			toggle_tone.join();
+			send_data.join();
 		}
 	}
 }
