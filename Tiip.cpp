@@ -96,11 +96,11 @@ void Tiip::nfcLedAction() {
 	}
 }
 
-void Tiip::saveDataToFile() {
+/*void Tiip::saveDataToFile() {
 	dataFile.open("dataFile.csv");
 	std::time_t t = std::time(0);
 	dataFile << std::put_time(std::localtime(&t), "%c %Z") << "," << currAmount << std::endl;
-}
+}*/
 
 void Tiip::enableProcess() {
 	while (true) {
@@ -116,7 +116,7 @@ void Tiip::enableProcess() {
 
 		if (buttonEnabled && nfc.isCardPresent(ISO^=1)) {
 			newCall = true;
-			saveDataToFile();
+			//saveDataToFile();
 			std::thread toggle_leds(&Tiip::successActionLED, this);
 			std::thread toggle_tone(&Tiip::successActionTone, this);
 			toggle_leds.join();

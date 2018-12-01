@@ -38,8 +38,16 @@ void pause(double duration) {
 	play(0, duration);
 }
 int main(int argc, const char *argv[]) {
+	wiringPiSetup();
+	softPwmCreate(1, 0, 100);
+while (1) {
+	softPwmWrite(1, 100);
+	usleep(1*1000*1000);
+	softPwmWrite(1,0);
+	usleep(1*1000*1000);
+}
 	// const int tone = atoi(argv[1]);
-
+/*
 	wiringPiSetup();
 	softPwmCreate(21, 0, 100);
 	softPwmWrite(21, 100);
@@ -133,7 +141,7 @@ int main(int argc, const char *argv[]) {
 	pause(10);
 	play(notes["e5"], notesDuration);
 	pause(10);
-
+*/
 	/*nfc_device *pnd;
 	nfc_target nt;
 	nfc_context *context;
