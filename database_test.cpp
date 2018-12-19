@@ -9,15 +9,25 @@
 #include <sstream>
 
 std::string getTime() {
-	auto t = std::time(nullptr);
+	/*auto t = std::time(nullptr);
 	auto tm = *std::localtime(&t);
 
 	std::ostringstream oss;
 	oss << std::put_time(&tm, "%d-%m-%Y %H-%M-%S %Z");
 	auto str = oss.str();
 
-	std::cout << str << std::endl;
-	return str;
+	return str;*/
+	time_t curr_time;
+	tm * curr_tm;
+	char date_time[100];
+
+	time(&curr_time);
+	curr_tm = localtime(&curr_time);
+
+	std::strftime(date_time, 50, "%d-%m-%Y %H-%M-%S %Z", curr_tm);
+
+	std::cout << date_time << std::endl;
+	return date_time;
 }
 
 void saveData() {

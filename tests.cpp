@@ -42,7 +42,7 @@ double notesDuration = 187.5;
 double pauseDuration = notesDuration*1.5;
 
 void play(int tone, double duration) {
-	softToneWrite(6, tone);
+	softToneWrite(1, tone);
 	usleep(duration*1000);
 }
 
@@ -50,21 +50,18 @@ void pause(double duration) {
 	play(0, duration);
 }
 int main(int argc, const char *argv[]) {
-	wiringPiSetup();
+	/*wiringPiSetup();
 	softPwmCreate(1, 0, 100);
 while (1) {
 	softPwmWrite(1, 100);
 	usleep(1*1000*1000);
 	softPwmWrite(1,0);
 	usleep(1*1000*1000);
-}
+}*/
 	// const int tone = atoi(argv[1]);
-/*
+
 	wiringPiSetup();
-	softPwmCreate(21, 0, 100);
-	softPwmWrite(21, 100);
-	usleep(1000);
-	softToneCreate(6);
+	softToneCreate(1);
 	play(notes["f#"], notesDuration);
 	pause(10);
 	play(notes["f#"], notesDuration);
@@ -153,7 +150,7 @@ while (1) {
 	pause(10);
 	play(notes["e5"], notesDuration);
 	pause(10);
-*/
+
 	/*nfc_device *pnd;
 	nfc_target nt;
 	nfc_context *context;

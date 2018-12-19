@@ -16,6 +16,8 @@
 #include <string.h>
 #include <iostream>
 #include <sstream>
+#include <chrono>
+#include <iomanip>
 
 Tiip::Tiip() : currButton(0), buttonEnabled(false), newCall(false), currAmount(0), timeDiff(0), ISO(0) {}
 
@@ -116,21 +118,20 @@ void Tiip::nfcLedAction() {
 	std::time_t t = std::time(0);
 	dataFile << std::put_time(std::localtime(&t), "%c %Z") << "," << currAmount << std::endl;
 }*/
-<<<<<<< HEAD
-=======
 
 std::string getTime() {
-	auto t = std::time(nullptr);
-	auto tm = *std::localtime(&t);
+	time_t curr_time;
+	tm * curr_tm;
+	char date_time[100];
 
-	std::ostringstream oss;
-	oss << std::put_time(&tm, "%d-%m-%Y %H:%M:%S %Z");
-	auto str = oss.str();
+	time(&curr_time);
+	curr_tm = localtime(&curr_time);
 
-	std::cout << str << std::endl;
-	return str;
+	std::strftime(date_time, 50, "%d-%m-%Y %H-%M-%S %Z", curr_tm);
+
+	std::cout << date_time << std::endl;
+	return date_time;
 }
->>>>>>> 299ea3b8e683987bbb0d8774e1e23fc406904dea
 
 void Tiip::saveToDatabase() {
 	CURL *curl;
@@ -181,10 +182,7 @@ void Tiip::enableProcess() {
 
 		if (buttonEnabled && nfc.isCardPresent(ISO^=1)) {
 			newCall = true;
-<<<<<<< HEAD
 			//saveDataToFile();
-=======
->>>>>>> 299ea3b8e683987bbb0d8774e1e23fc406904dea
 			std::thread toggle_leds(&Tiip::successActionLED, this);
 			std::thread toggle_tone(&Tiip::successActionTone, this);
 			std::thread send_data(&Tiip::saveToDatabase, this);
