@@ -1,12 +1,27 @@
 #include <curl/curl.h>
 #include <stdio.h>
 #include <string.h>
-#include <sys/stat.h>
-#include <fcntl.h>
+//#include <sys/stat.h>
+//#include <fcntl.h>
 #include <iostream>
-#include <iomanip>
 #include <ctime>
 #include <sstream>
+#include <vector>
+#include <iterator>
+
+std::vector<double> push_sequence;
+
+std::string vectorToString(std::vector<double> v) {
+	if (!v.empty()) {
+		std::ostringstream oss;
+		std::copy(v.begin(), v.end()-1, std::ostream_iterator<double>(oss, ","));
+		oss << v.back();
+
+		std::cout << oss.str() << std::endl;
+		return oss.str();
+	}
+	return std::string("n/a");
+}
 
 std::string getTime() {
 	/*auto t = std::time(nullptr);
@@ -34,7 +49,7 @@ void saveData() {
 	CURL *curl;
 	CURLcode res;
 	char data[200];
-	snprintf(data, 200, "{\"time\":\"%s\",\"amount\":%.2f}\0",getTime().c_str(), 0.5);
+	snprintf(data, 200, "{\"session_end\":\"%s\",\"amount\":%.2f, \"sequence\":[%s]}",getTime().c_str(), 0.5, vectorToString(push_sequence).c_str());
 printf("%s", data);
 
 	curl_global_init(CURL_GLOBAL_ALL);
@@ -49,7 +64,7 @@ printf("%s", data);
 		list = curl_slist_append(list, "Content-Type: application/x-www-form-urlenconded");
 
 		//curl options
-		curl_easy_setopt(curl, CURLOPT_VERBOSE, true);
+		curl_easy_setopt(curl, CURLOPT_VERBOSE, false);
 		curl_easy_setopt(curl, CURLOPT_POST, true);
 		curl_easy_setopt(curl, CURLOPT_HEADER, true);
 		curl_easy_setopt(curl, CURLOPT_HTTPHEADER, list);
@@ -67,6 +82,10 @@ printf("%s", data);
 }
 
 int main() {
+	push_sequence.push_back(0.5);
+	push_sequence.push_back(2);
+	push_sequence.push_back(1);
+
 	saveData();
 	return 0;
 }
